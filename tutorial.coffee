@@ -124,13 +124,15 @@ class @TutorialManager
     return @steps[@step].onLoad
 
   getPositions: ->
+    @retryGetPositions = false
+
     # @stepDep.depend() if we want reactivity
     selector = @steps[@step].spot
     return [ defaultSpot(), defaultModal() ] unless selector?
 
     items = $(selector)
     if items.length is 0
-      console.log "Tutorial error: couldn't find spot for " + selector
+      @retryGetPositions = true
       return [ defaultSpot(), defaultModal() ]
 
     # Compute spot and modal positions
@@ -147,9 +149,9 @@ class @TutorialManager
       elWidth = $el.outerWidth() || parseInt($el.attr("width"))
       elHeight = $el.outerHeight() || parseInt($el.attr("height"))
       offset = $el.offset()
-      
+
       hull.top = Math.min(hull.top, offset.top)
-      hull.left = Math.min(hull.left, offset.left)      
+      hull.left = Math.min(hull.left, offset.left)
       hull.bottom = Math.min(hull.bottom, $(window).height() - offset.top - elHeight)
       hull.right = Math.min(hull.right, $(window).width() - offset.left - elWidth)
 

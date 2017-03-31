@@ -5,12 +5,22 @@ Template.tutorial.rendered = ->
   $spot = @$(".spotlight")
   $modal = @$(".modal-dialog")
 
+
+  retry_count = 5
   # Add resizer on first render
   @resizer = =>
     [spotCSS, modalCSS] = @tm.getPositions()
     # Don't animate, just move
     $spot.css(spotCSS)
     $modal.css(modalCSS)
+
+    # Sometimes the element doesn't exist, wait 300ms and try again, the DOM
+    # may not be ready yet.
+    if @tm.retryGetPositions == true and retry_count > 0
+      retry_count--;
+      Meteor.setTimeout @resizer, 300
+    else
+      retry_count = 5
 
   # attach a window resize handler
   $(window).on('resize', @resizer)
